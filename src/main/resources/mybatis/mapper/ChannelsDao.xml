@@ -1,0 +1,30 @@
+<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.test.dao.ChannelsDao">
+    <select id="findChannels" resultType="Channels">
+        SELECT * FROM dbo.t_channels where lsh=#{lsh}
+    </select>
+
+    <insert id="insertChannels">
+        insert into dbo.t_channels values(
+        #{lsh}
+        ,#{computer}
+        ,#{extension}
+        ,#{enable}
+        ,#{CardType}
+        ,#{ChNoInCard}
+        ,#{ChannelType}
+        ,#{ChannelIPAddr}
+        ,#{ChannelMAC}
+        ,#{ChannelPacketSize}
+        ,#{ChannelVirtualExt}
+        ,#{ChannelSBCServer}
+        ,#{CTIAppIPAddr})
+    </insert>
+
+    <delete id="delChannels">
+        delete from dbo.t_channels where lsh=#{lsh}
+    </delete>
+</mapper>-->

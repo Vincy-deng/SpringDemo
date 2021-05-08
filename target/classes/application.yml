@@ -1,0 +1,82 @@
+server:
+  port: 8088
+spring:
+  jpa:
+    properties:
+      hibernate:
+        ddl-auto: none
+        dialect: org.hibernate.dialect.SQLServer2008Dialect
+    open-in-view: true
+  datasource:
+      driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
+      url:  jdbc:sqlserver://127.0.0.1;databaseName=DBApsuite;integratedSecurity=false
+      username: ApsuiteUser
+      password:
+    #   Spring Boot官方推荐的数据库连接池是Hikari，从一些第三方的评测结果看，Hikari的性能比Druid要好，但是Druid自带各种监控工具，背后又有阿里一直在为它背书
+    #   hikari数据源配置，
+      hikari:
+        connection-test-query: SELECT 1 FROM DUAL
+        connection-timeout: 30000
+        maximum-pool-size: 20
+        max-lifetime: 1800000
+        minimum-idle: 5
+      # 初始连接数
+      initial-size: 5
+      # 最小连接数
+      min-idle: 10
+      # 最大连接数
+      max-active: 20
+      # 获取连接超时时间
+      max-wait: 5000
+      # 连接有效性检测时间
+      time-between-eviction-runs-millis: 60000
+      # 连接在池中最小生存的时间
+      min-evictable-idle-time-millis: 300000
+      # 连接在池中最大生存的时间
+      max-evictable-idle-time-millis: 900000
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      # 检测连接是否有效
+      validation-query: select 1
+      # 配置监控统计
+      webStatFilter:
+        enabled: true
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        reset-enable: false
+      filter:
+        stat:
+          enabled: true
+          # 记录慢SQL
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+logging:
+  level:
+    com.test.dao : debug
+    com.test.service : debug
+    com.test.controller : debug
+# pagehelper 分页
+#pagehelper:
+  #需要修改
+  #mysql database
+  #helperDialect: mysql
+  #sqlserver database
+  #helperDialect: sqlserver
+  #oracle  database
+  #helperDialect: oracle
+  #reasonable: true
+  #supportMethodsArguments: true
+  #pageSizeZero: false
+  #params: count=countSql
+#pagehelper:
+  #helper-dialect: SQLServer
+  #reasonable: true
+  #support-methods-arguments: true
+  #params: count=countSql
+  #pageSizeZero: true
