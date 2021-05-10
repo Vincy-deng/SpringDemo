@@ -224,6 +224,7 @@ public class AccountController {
       }
   }
 
+
   @PostMapping("/findAllAccount")
   public ResponseEntity<BaseResponse<TxAccountEntity>> findAllAccount(){
     try {
@@ -274,15 +275,32 @@ public class AccountController {
     }
   }
 
+
   @PostMapping("/findAgentById")
   public ResponseEntity<BaseResponse<TxAccountEntity>> findAgentById(@RequestParam int aid){
     try {
       List<TxAccountEntity> account =accountService.findAgenctById(aid);
+      Map<Integer, String> listDesp = new HashMap<Integer, String>();
       if (account!=null){
-        String token = "adminToken";
+        for (int i = 0; i <account.size() ; i++) {
+          String[] str=account.get(i).getAccountDesp().split(",");
+          String StrD="";
+          String StrM="";
+          for (int j = 0; j <str.length ; j++) {
+            StrD=accountService.findDespByDespS(str[j]);
+            if (StrD==null || StrD.isEmpty()){
+              StrM+=accountService.findDespById(str[j])+",";
+            }else {
+              StrD+=StrM+",";
+            }
+          }
+          listDesp.put(account.get(i).getAccountId(),StrD);
+        }
+        String token = "adminTokenAAAAAAA";
         HashMap obj = new HashMap();
         obj.put("token", token);
         obj.put("account", account);
+        obj.put("listDesp", listDesp);
         return BaseResponse.generateOKResponseEntity(obj);
       }else {
         return BaseResponse.generateBadResponseEntity(500,"查询失败","");
@@ -292,5 +310,6 @@ public class AccountController {
       return BaseResponse.generateBadResponseEntity(500,"服务器内部错误","");
     }
   }
+
 
 }

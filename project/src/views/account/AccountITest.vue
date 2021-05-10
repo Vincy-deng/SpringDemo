@@ -188,7 +188,14 @@
           :data="accountAll"
           height="250"
           border
+          ref="multipleTable"
+          tooltip-effect="dark"
+          @selection-change="handleSelectionChange"
           style="width: 100%;margin-right: 40px;">
+          <el-table-column
+            type="selection"
+            width="55">
+          </el-table-column>
           <el-table-column v-if="show"  prop="accountId" label="帐号id" width="180">
           </el-table-column>
           <el-table-column prop="accountName" label="帐号名称" width="180">
@@ -202,6 +209,10 @@
           height="250"
           border
           style="width: 100%">
+          <el-table-column
+            type="selection"
+            width="55">
+          </el-table-column>
             <el-table-column v-if="show"  prop="accountId" label="帐号id" width="180">
             </el-table-column>
             <el-table-column prop="accountName" label="帐号名称" width="180">
@@ -301,7 +312,8 @@
           accountId: '',
           accountAlias: ''
         }],
-        value: ''
+        value: '',
+        multipleSelection: [],
       };
     },
     created () {
@@ -323,6 +335,18 @@
       }
     },
     methods: {
+      toggleSelection(rows) {
+        if (rows) {
+          rows.forEach(row => {
+            this.$refs.multipleTable.toggleRowSelection(row);
+          });
+        } else {
+          this.$refs.multipleTable.clearSelection();
+        }
+      },
+      handleSelectionChange(val) {
+        this.multipleSelection = val;
+      },
       selectProvider(val){
         console.log(val,"-------------------------------selectProvider----------------------------")
         /*let temp = row.value == null ? [] : row.value.split(",");
