@@ -32,7 +32,7 @@ public interface AccountDao extends JpaRepository<TxAccountEntity,String> {
   @Query(value = "select * from tx_account where account_property=?1 ",nativeQuery = true)
   List<TxAccountEntity> findDepartmentList(String a);
 
-  @Query(value = "select * from tx_account where account_id=?1 and account_property=16 ",nativeQuery = true)
+  @Query(value = "select account_alias from tx_account where account_id=?1 and account_property=16 ",nativeQuery = true)
   String findDespByDespS(String a);
 
   @Query(value = "select account_alias from tx_account where account_id=?1 ",nativeQuery = true)

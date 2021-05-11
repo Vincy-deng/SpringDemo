@@ -183,7 +183,7 @@
           :value="item.accountId">
         </el-option>
         </el-select>
-      <div style="display: inline-flex;margin-top: 20px;">
+      <div style="display: inline-flex;margin-top: 20px;width: 100%;">
         <el-table
           :data="accountAll"
           height="250"
@@ -191,33 +191,46 @@
           ref="multipleTable"
           tooltip-effect="dark"
           @selection-change="handleSelectionChange"
-          style="width: 100%;margin-right: 40px;">
+          style="width: 100%;margin-right: 20px;">
           <el-table-column
             type="selection"
             width="55">
           </el-table-column>
-          <el-table-column v-if="show"  prop="accountId" label="帐号id" width="180">
+          <el-table-column v-if="show"  prop="accountId" label="帐号id" width="100">
           </el-table-column>
-          <el-table-column prop="accountName" label="帐号名称" width="180">
+          <el-table-column prop="accountName" label="帐号名称" width="100">
           </el-table-column>
-          <el-table-column prop="accountAlias" label="帐号别名" width="180">
+          <el-table-column prop="accountAlias" label="帐号别名" width="100">
+          </el-table-column>
+          <el-table-column prop="accountDesp" label="所属部门" :formatter="changeManProp" width="120">
+          </el-table-column>
+          <el-table-column prop="accountDesp" label="所属管理员" :formatter="changeAForA" width="120">
           </el-table-column>
         </el-table>
-
+        <el-button-group style="display: inline-grid;">
+          <el-button type="primary" icon="el-icon-d-arrow-right" @click="allMoveRight"
+                     style="border-top-right-radius: 4px;border-bottom-left-radius: 0;"></el-button>
+          <el-button type="primary" icon="el-icon-arrow-right" @click="moveRight"></el-button>
+          <el-button type="primary" icon="el-icon-arrow-left" @click="moveLeft" ></el-button>
+          <el-button type="primary" icon="el-icon-d-arrow-left" @click="allMoveLeft"
+                     style="border-bottom-left-radius: 4px;border-top-right-radius: 0;"></el-button>
+        </el-button-group>
         <el-table
           :data="accountByMaId"
           height="250"
           border
-          style="width: 100%">
+          style="width: 70%;margin-left: 20px">
           <el-table-column
             type="selection"
             width="55">
           </el-table-column>
-            <el-table-column v-if="show"  prop="accountId" label="帐号id" width="180">
+            <el-table-column v-if="show"  prop="accountId" label="帐号id" width="120">
             </el-table-column>
-            <el-table-column prop="accountName" label="帐号名称" width="180">
+            <el-table-column prop="accountName" label="帐号名称" width="100">
             </el-table-column>
-            <el-table-column prop="accountAlias" label="帐号别名" width="180">
+            <el-table-column prop="accountAlias" label="帐号别名" width="100">
+            </el-table-column>
+            <el-table-column prop="accountDesp" label="所属部门" :formatter="changeDeProp" width="120">
             </el-table-column>
         </el-table>
       </div>
@@ -277,6 +290,10 @@
         treeId:'',
         treeData: [{}],
         listDesp:{},
+        listDesp1:{},
+        listDesp2:[{}],
+        accountMangen:[{}],
+        despManList:{},
         accountAll:[{}],
         accountByMaId:[{}],
         //初始化复选框是否被选中
@@ -313,7 +330,7 @@
           accountAlias: ''
         }],
         value: '',
-        multipleSelection: [],
+        multipleSelection: []
       };
     },
     created () {
@@ -335,6 +352,26 @@
       }
     },
     methods: {
+      //管理弹框中移动人员信息
+      allMoveRight(row){
+        console.log(row,'--------------------allMoveRight-------------------');
+      },
+      moveRight(rows){
+
+        console.log(this.multipleSelection[0],'--------------------moveRight-------------------');
+        for (let i = 0; i <this.multipleSelection.size() ; i++) {
+          this.accountByMaId.push(this.multipleSelection[i]);
+        }
+
+
+
+      },
+      allMoveLeft(val){
+        console.log(val,'--------------------allMoveLeft-------------------');
+      },
+      moveLeft(val){
+        console.log(val,'--------------------moveLeft-------------------');
+      },
       toggleSelection(rows) {
         if (rows) {
           rows.forEach(row => {
@@ -345,10 +382,11 @@
         }
       },
       handleSelectionChange(val) {
+        console.log(val,'-------------handleSelectionChange----------------');
         this.multipleSelection = val;
       },
       selectProvider(val){
-        console.log(val,"-------------------------------selectProvider----------------------------")
+        console.log(val,'-------------------------------selectProvider----------------------------');
         /*let temp = row.value == null ? [] : row.value.split(",");
         let arr = [];
         for (var i = 0; i < temp.length; i++) {
@@ -362,6 +400,19 @@
       //改变显示的属性
       changeManProp(row){
         return this.listDesp[row.accountId];
+        //return this.showDesp;
+      },
+      changeAForA(row){
+
+        if (this.accountMangen[row.accountId]!=null && this.accountMangen[row.accountId]!=''){
+          console.log(this.accountMangen[row.accountId].accountAlias,'---------------------------changeAForA-----------------------------');
+          return this.accountMangen[row.accountId].accountAlias;
+        }else {
+          return '暂无管理员';
+        }
+      },
+      changeDeProp(row){
+        return this.listDesp1[row.accountId];
         //return this.showDesp;
       },
       getDepartmentName(val){
@@ -548,17 +599,21 @@
         console.log('这里是updateAccount',this.updateAccountData);
       },
       manageAccount(row){
-        console.log(row.accountId,"----------------manageAccount--------------");
+        console.log(row.accountId,'----------------manageAccount--------------');
         const data={
           aid:row.accountId
         };
         findAgentById(data).then(res=>{
-          console.log(res,"----------------res--------------")
-          this.accountByMaId=res.data.account
+          console.log(res,'----------------res--------------');
+          this.accountByMaId=res.data.account;
+          this.listDesp1=res.data.listDesp;
         });
         findAllAccount().then(res=>{
-          this.accountAll=res.data.account
-          console.log(res,"----------------res--------------")
+          this.accountAll=res.data.account;
+          this.listDesp=res.data.despList;
+          this.despManList=res.data.despManList;
+          this.accountMangen=res.data.accountMangen;
+          console.log(res,'----------------res--------------');
         });
         this.centerDialogVisible=true;
       },

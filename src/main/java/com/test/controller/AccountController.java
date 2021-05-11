@@ -229,41 +229,43 @@ public class AccountController {
   public ResponseEntity<BaseResponse<TxAccountEntity>> findAllAccount(){
     try {
       List<TxAccountEntity> account =accountService.findAllAccount();
-      List<resultAccountList> accountList=new ArrayList<resultAccountList>();
       HashMap<Integer,TxAccountEntity> accountMangen = new HashMap<>();
+      HashMap<Integer,String> despList = new HashMap<>();
+      HashMap<Integer,String> despManList = new HashMap<>();
       for (int i = 0; i <account.size() ; i++) {
+        //这里是把存在管理人就把管理人的信息查出来，并带上当前id，以键值对的方式存储到集合中
         TxAccountEntity accountM=accountService.findMangen(account.get(i).getAccountId());
         accountMangen.put(account.get(i).getAccountId(),accountM);
-        String D=(account.get(i).getAccountDesp()==null)?"0":account.get(i).getAccountDesp();
+        //这里开始是把Desp字段的以","分割，并查询到部门信息及管理人
+        String D=(account.get(i).getAccountDesp()==null || account.get(i).getAccountDesp().isEmpty())?"0":account.get(i).getAccountDesp();
         String[] as=D.split(",");
-        resultAccountList resultAccountList=new resultAccountList();
+        String b="";
+        String a="";
         for (int j = 0; j <as.length ; j++) {
-          String b="";
-          String a="";
             if (!as[j].equals("0") && !as[j].isEmpty()){
-              a=accountService.findDespByDespS(as[j]);
-              if (a == null || a.length() == 0){
+              String str="";
+              str=accountService.findDespByDespS(as[j]);
+              if (str == null || str.length() == 0){
+                a+="默认部门,";
                 b=accountService.findDespById(as[j]);
                 b+=b+",";
               }else {
-                a+=a+",";
+                a+=str+",";
               }
-              resultAccountList.setAid(account.get(i).getAccountId());
-              resultAccountList.setDespStr(a);
-              resultAccountList.setManStr(b);
             }else {
-              resultAccountList.setAid(account.get(i).getAccountId());
-              resultAccountList.setDespStr("默认部门");
+              a+="默认部门,";
             }
         }
-        accountList.add(resultAccountList);
+        despList.put(account.get(i).getAccountId(),a);
+        despManList.put(account.get(i).getAccountId(),b);
       }
       if (account!=null){
         String token = "adminToken";
         HashMap obj = new HashMap();
         obj.put("token", token);
         obj.put("account", account);
-        obj.put("accountList", accountList);
+        obj.put("despList", despList);
+        obj.put("despManList", despManList);
         obj.put("accountMangen", accountMangen);
         return BaseResponse.generateOKResponseEntity(obj);
       }else {
@@ -287,16 +289,18 @@ public class AccountController {
           String StrD="";
           String StrM="";
           for (int j = 0; j <str.length ; j++) {
-            StrD=accountService.findDespByDespS(str[j]);
-            if (StrD==null || StrD.isEmpty()){
+            String str2="";
+            str2=accountService.findDespByDespS(str[j]);
+            if (str2==null || str2.isEmpty()){
+              StrD+="默认部门";
               StrM+=accountService.findDespById(str[j])+",";
             }else {
-              StrD+=StrM+",";
+              StrD+=str2+",";
             }
           }
           listDesp.put(account.get(i).getAccountId(),StrD);
         }
-        String token = "adminTokenAAAAAAA";
+        String token = "adminToken";
         HashMap obj = new HashMap();
         obj.put("token", token);
         obj.put("account", account);
