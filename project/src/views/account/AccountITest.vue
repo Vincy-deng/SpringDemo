@@ -165,7 +165,7 @@
         width="96%"
         center>
         <el-select
-          v-model="value.accountId"
+          v-model="options.accountAlias"
           multiple
           filterable
           popper-class="select-rule"
@@ -174,6 +174,7 @@
           :default-first-option=true
           :reserve-keyword=true
           @change="selectProvider"
+          @remove-tag="deleteTag"
           style="width:100%"
           placeholder="请选择">
         <el-option
@@ -186,21 +187,22 @@
       <div style="display: inline-flex;margin-top: 20px;width: 100%;">
         <el-table
           :data="accountAll"
-          height="250"
+          height="350"
           border
           ref="multipleTable"
           tooltip-effect="dark"
           @selection-change="handleSelectionChange"
+          :row-style="rowstyle"
           style="width: 100%;margin-right: 20px;">
           <el-table-column
             type="selection"
             width="55">
           </el-table-column>
-          <el-table-column v-if="show"  prop="accountId" label="帐号id" width="100">
+          <el-table-column v-if="show"  prop="accountId" label="帐号id" width="80">
           </el-table-column>
-          <el-table-column prop="accountName" label="帐号名称" width="100">
+          <el-table-column prop="accountName" label="帐号名称" width="80">
           </el-table-column>
-          <el-table-column prop="accountAlias" label="帐号别名" width="100">
+          <el-table-column prop="accountAlias" label="帐号别名" width="80">
           </el-table-column>
           <el-table-column prop="accountDesp" label="所属部门" :formatter="changeManProp" width="120">
           </el-table-column>
@@ -217,26 +219,29 @@
         </el-button-group>
         <el-table
           :data="accountByMaId"
-          height="250"
+          height="350"
           border
+          ref="multipleTable2"
+          tooltip-effect="dark"
+          @selection-change="handleSelectionChange2"
           style="width: 70%;margin-left: 20px">
           <el-table-column
             type="selection"
             width="55">
           </el-table-column>
-            <el-table-column v-if="show"  prop="accountId" label="帐号id" width="120">
+            <el-table-column v-if="show"  prop="accountId" label="帐号id" width="50">
             </el-table-column>
-            <el-table-column prop="accountName" label="帐号名称" width="100">
+            <el-table-column prop="accountName" label="帐号名称" width="120">
             </el-table-column>
-            <el-table-column prop="accountAlias" label="帐号别名" width="100">
+            <el-table-column prop="accountAlias" label="帐号别名" width="120">
             </el-table-column>
-            <el-table-column prop="accountDesp" label="所属部门" :formatter="changeDeProp" width="120">
+            <el-table-column prop="accountDesp" label="所属部门" :formatter="changeDeProp" width="200">
             </el-table-column>
         </el-table>
       </div>
         <span slot="footer" class="dialog-footer">
     <el-button @click="centerDialogVisible = false">取 消</el-button>
-    <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+    <el-button type="primary" @click="saveForM">保 存</el-button>
   </span>
       </el-dialog>
   </div>
@@ -245,7 +250,10 @@
 
 
 <script>
-  import { getAccountList,delAccount,updateAccount,addAccount,getRightTree,getDepartmentList,findAgentById,findAllAccount} from '../../api/accountData';
+  import { getAccountList,delAccount,updateAccount,addAccount,getRightTree,
+    getDepartmentList,findAgentById,findAllAccount,findAllAccountByDid,saveManage} from '../../api/accountData';
+  let selectProviderList = [];
+  let mAid='';
   export default {
     data() {
       var validatePass1 = (rule,value,callback) => {
@@ -293,7 +301,7 @@
         listDesp1:{},
         listDesp2:[{}],
         accountMangen:[{}],
-        despManList:{},
+        despManList:[{}],
         accountAll:[{}],
         accountByMaId:[{}],
         //初始化复选框是否被选中
@@ -330,7 +338,8 @@
           accountAlias: ''
         }],
         value: '',
-        multipleSelection: []
+        multipleSelection: [{}],
+        multipleSelection2: [{}]
       };
     },
     created () {
@@ -354,23 +363,48 @@
     methods: {
       //管理弹框中移动人员信息
       allMoveRight(row){
-        console.log(row,'--------------------allMoveRight-------------------');
-      },
-      moveRight(rows){
-
-        console.log(this.multipleSelection[0],'--------------------moveRight-------------------');
-        for (let i = 0; i <this.multipleSelection.size() ; i++) {
+        this.multipleSelection=this.accountAll;
+        this.accountAll=[];
+        for (let i = 0; i <this.multipleSelection.length ; i++) {
           this.accountByMaId.push(this.multipleSelection[i]);
         }
-
-
-
       },
+      moveRight(){
+        let multData = this.multipleSelection;
+        let tableData =this.accountAll;
+        let multDataLen = multData.length;
+        let tableDataLen = tableData.length;
+        for(let i = 0; i < multDataLen ;i++){
+          for(let y=0;y < tableDataLen;y++){
+            if(JSON.stringify(tableData[y]) == JSON.stringify(multData[i])){ //判断是否相等，相等就删除
+              this.accountAll.splice(y,1);
+              console.log('aa');
+            }
+          }
+          this.accountByMaId.push(this.multipleSelection[i]);
+        }
+      },
+
       allMoveLeft(val){
-        console.log(val,'--------------------allMoveLeft-------------------');
+        this.multipleSelection2=this.accountByMaId;
+        this.accountByMaId=[];
+        for (let i = 0; i <this.multipleSelection2.length ; i++) {
+          this.accountAll.push(this.multipleSelection2[i]);
+        }
       },
       moveLeft(val){
-        console.log(val,'--------------------moveLeft-------------------');
+        let multData = this.multipleSelection2;
+        let tableData =this.accountByMaId;
+        let multDataLen = multData.length;
+        let tableDataLen = tableData.length;
+        for(let i = 0; i < multDataLen ;i++){
+          for(let y=0;y < tableDataLen;y++){
+            if(JSON.stringify(tableData[y]) == JSON.stringify(multData[i])){ //判断是否相等，相等就删除
+              this.accountByMaId.splice(y,1);
+            }
+          }
+          this.accountAll.push(this.multipleSelection2[i]);
+        }
       },
       toggleSelection(rows) {
         if (rows) {
@@ -382,38 +416,76 @@
         }
       },
       handleSelectionChange(val) {
-        console.log(val,'-------------handleSelectionChange----------------');
         this.multipleSelection = val;
       },
-      selectProvider(val){
-        console.log(val,'-------------------------------selectProvider----------------------------');
-        /*let temp = row.value == null ? [] : row.value.split(",");
-        let arr = [];
-        for (var i = 0; i < temp.length; i++) {
-          if (this.options1.length > 0)
-            this.options1.forEach(item => {
-              if (item.value == temp[i]) arr.push(item.text)
-            });
-        }
-        this.value1.value = arr;*/
+      handleSelectionChange2(val) {
+        this.multipleSelection2 = val;
+      },
+      selectProvider(value){
+        selectProviderList = [];
+        value.forEach(function(data, index) {
+          selectProviderList.push(data);
+        });
+        const data={
+          did:selectProviderList
+        };
+        findAllAccountByDid(data.did).then(res=>{
+          this.accountAll=[];
+          for (let i = 0; i <res.data.accountList.length ; i++) {
+            for (let j = 0; j <res.data.accountList[i].length ; j++) {
+              this.accountAll.push(res.data.accountList[i][j]);
+            }
+          }
+        });
+      },
+      deleteTag(value) {
+        selectProviderList.forEach(function(data, index) {
+          if (data.accountId === value) {
+            selectProviderList.splice(index, value);
+          }
+        });
+        if (selectProviderList.length===0 || selectProviderList==='' || selectProviderList===null){
+          findAllAccount().then(res=>{
+            this.accountAll=res.data.account;
+            this.listDesp=res.data.despList;
+            this.despManList=res.data.despManList;
+            this.accountMangen=res.data.accountMangen;
+          });
+        } ;
       },
       //改变显示的属性
       changeManProp(row){
         return this.listDesp[row.accountId];
         //return this.showDesp;
       },
+      changeDeProp(row){
+        return (this.listDesp1[row.accountId]==null ||this.listDesp1[row.accountId]=='')?this.listDesp[row.accountId]:this.listDesp1[row.accountId];
+        //return this.showDesp;
+      },
       changeAForA(row){
-
-        if (this.accountMangen[row.accountId]!=null && this.accountMangen[row.accountId]!=''){
-          console.log(this.accountMangen[row.accountId].accountAlias,'---------------------------changeAForA-----------------------------');
+        if (this.accountMangen[row.accountId]!==null && this.accountMangen[row.accountId]!==''){
           return this.accountMangen[row.accountId].accountAlias;
         }else {
           return '暂无管理员';
         }
       },
-      changeDeProp(row){
-        return this.listDesp1[row.accountId];
-        //return this.showDesp;
+      rowstyle({ row, rowIndex }) {
+        let stylejson = {};
+        if (this.accountMangen[row.accountId]!==null && this.accountMangen[row.accountId]!==''){
+          //stylejson.background = 'rgb(198, 226, 255)';
+          // 也可以修改文字颜色
+          stylejson.color='orange';
+          return stylejson;
+        } ;
+        /*let stylejson = {};
+        if (row.spu_id == "349") {
+          stylejson.background = "rgb(198, 226, 255)";// 背景颜色
+          // 也可以修改文字颜色
+          stylejson.color='green' ;
+          return stylejson;
+        } else {
+          return "";
+        }*/
       },
       getDepartmentName(val){
         console.log('这里是getDepartmentName',val);
@@ -499,6 +571,35 @@
       },
       handleDelete(index, row) {
         console.log(index, row);
+      },
+      saveForM(val){
+        console.log(mAid,'------------------------保存------------------------');
+        let mid='';
+        for (let i = 0; i <this.accountByMaId.length; i++) {
+          mid+=this.accountByMaId[i].accountId+',';
+        }
+        const data={
+          aid:mAid,
+          mid:mid
+        };
+        saveManage(data).then(res=>{
+          console.log(res,'------------------------保存------------------------');
+          this.$message({
+            showClose: true,
+            message: '保存成功',
+            type: 'success'
+          });
+          this.centerDialogVisible = false;
+          this.queryFn();
+        }).catch(error =>{
+          this.$message({
+            showClose: true,
+            message: '保存失败',
+            type: 'error'
+          });
+        });
+
+        //centerDialogVisible = false
       },
       closeAddDialog(){
         this.addAccountData = {
@@ -600,6 +701,8 @@
       },
       manageAccount(row){
         console.log(row.accountId,'----------------manageAccount--------------');
+        this.$router.push({path:'/account/Manager',query:{aid:row.accountId}});
+        /*mAid=row.accountId;
         const data={
           aid:row.accountId
         };
@@ -615,7 +718,7 @@
           this.accountMangen=res.data.accountMangen;
           console.log(res,'----------------res--------------');
         });
-        this.centerDialogVisible=true;
+        this.centerDialogVisible=true;*/
       },
       delAccount(row){
         const data = {

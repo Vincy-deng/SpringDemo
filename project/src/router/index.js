@@ -38,7 +38,13 @@ export const constantRoutes = [
       name: 'account',
       component: () => import('@/views/account/AccountITest'),
       meta: { title: '用户测试', icon: 'dashboard' }
-    }]
+    },{
+      path: 'Manager',
+      name: 'Manager',
+      component: () => import('@/views/account/Manager'),
+      meta: { title: '用户测试', icon: 'dashboard' }
+    }
+    ]
   },
   {
     path: '/channels',
@@ -72,12 +78,12 @@ export const Account = [
         component: () => import('@/views/account/AccountITest'),
         meta: { title: '测试1', icon: 'table' }
       },
-      /*{
-        path: 'account',
-        name: 'account',
-        component: () => import('@/views/account/AccountInfo'),
+      {
+        path: 'Manager',
+        name: 'Manager',
+        component: () => import('@/views/account/Manager'),
         meta: { title: '测试2', icon: 'table' }
-      },*/
+      },
     ]
   },{
     path: '/channels',

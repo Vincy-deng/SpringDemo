@@ -4,8 +4,7 @@ import com.test.service.AccountService;
 import com.test.util.BaseResponse;
 import com.test.util.RightItemUtil;
 import com.test.vo.TxAccountEntity;
-import com.test.vo.resultAccountList;
-import com.test.vo.treeNode;
+import com.test.vo.TxManagerAgentEntity;
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +64,7 @@ public class AccountController {
                                                                     @RequestParam String accountRights,
                                                                     @RequestParam String accountDesp,
                                                                     @RequestParam String accountAlias){
+      System.out.println("--------------------进了添加接口------------------"+accountName);
       TxAccountEntity account=new TxAccountEntity();
       account.setAccountAlias(accountAlias);
       account.setAccountDesp(accountDesp);
@@ -97,6 +97,7 @@ public class AccountController {
           list.add(account);
         }
       }else {
+        account.setAccountName(accountName);
         list.add(account);
       }
       try {
@@ -312,6 +313,48 @@ public class AccountController {
     } catch (Exception e) {
       e.printStackTrace();
       return BaseResponse.generateBadResponseEntity(500,"服务器内部错误","");
+    }
+  }
+
+
+  @PostMapping("/findAllAccountByDid")
+  public ResponseEntity<BaseResponse<TxAccountEntity>> findAllAccountByDid(@RequestParam int[] did){
+    List<Object> accountList = new ArrayList<>();
+    for (int i = 0; i <did.length ; i++) {
+      List<TxAccountEntity> account=accountService.findAllAccountByDid(String.valueOf(did[i]));
+      accountList.add(account);
+    }
+    if (accountList==null){
+      return BaseResponse.generateBadResponseEntity(500,"查找失败","");
+    }else {
+      String token="adminToken";
+      HashMap obj=new HashMap();
+      obj.put("token",token);
+      obj.put("accountList",accountList);
+      return BaseResponse.generateOKResponseEntity(obj);
+    }
+  }
+
+
+  @PostMapping("/saveManage")
+  public ResponseEntity<BaseResponse<TxAccountEntity>> saveManage(@RequestParam int aid, @RequestParam String mid){
+      String[] str=mid.split(",");
+    TxManagerAgentEntity managerAgentEntity=new TxManagerAgentEntity();
+    managerAgentEntity.setManagerId(Long.valueOf(aid));
+    int a=accountService.delMbyId(aid);
+    int result=0;
+    for (int i = 0; i <str.length ; i++) {
+      managerAgentEntity.setAgentId(Long.parseLong(str[i]));
+      result+=accountService.saveManage(managerAgentEntity);
+    }
+    if (result==0){
+      return BaseResponse.generateBadResponseEntity(500,"查找失败","");
+    }else {
+      String token="adminToken";
+      HashMap obj=new HashMap();
+      obj.put("token",token);
+      obj.put("result",result);
+      return BaseResponse.generateOKResponseEntity(obj);
     }
   }
 

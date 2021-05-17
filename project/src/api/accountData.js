@@ -105,3 +105,19 @@ export function findAllAccount(){
     method: 'post'
   })
 }
+
+export function findAllAccountByDid(data){
+  return request({
+    url: '/AccountController/findAllAccountByDid?did='+data,
+    //params: data
+    method: 'post'
+  })
+}
+
+export function saveManage(data){
+  return request({
+    url: '/AccountController/saveManage',
+    params: data,
+    method: 'post'
+  })
+}

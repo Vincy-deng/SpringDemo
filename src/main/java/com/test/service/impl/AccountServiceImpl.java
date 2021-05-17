@@ -1,9 +1,10 @@
 package com.test.service.impl;
 
 import com.test.dao.AccountDao;
+import com.test.dao.ManagerAgentDao;
 import com.test.service.AccountService;
 import com.test.vo.TxAccountEntity;
-import com.test.vo.resultAccountList;
+import com.test.vo.TxManagerAgentEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Autowired
     private AccountDao accountDao;
+    @Autowired
+    private ManagerAgentDao managerAgentDao;
     private final Log log= LogFactory.getLog(getClass());
 
     @Override
@@ -32,6 +35,17 @@ public class AccountServiceImpl implements AccountService {
         }
         return 0;
     }
+
+
+  @Override
+  public int delMbyId(int valueOf) {
+    try {
+       return managerAgentDao.delMbyId(valueOf);
+    } catch (Exception e) {
+      log.debug("AccountServiceImpl- ->>findByAccountNameAndPwd",e);
+    }
+    return 0;
+  }
 
 
   @Override
@@ -68,6 +82,17 @@ public class AccountServiceImpl implements AccountService {
 
 
   @Override
+  public List<TxAccountEntity> findAllAccountByDid(String s) {
+    try {
+      return  accountDao.findAllAccountByDid("%"+s+"%");
+    } catch (Exception e) {
+      log.debug("AccountServiceImpl- ->>findByAccountNameAndPwd",e);
+    }
+    return null;
+  }
+
+
+  @Override
     public List<TxAccountEntity> findByAccountNameAndPwd(String username, String password) {
         try {
             return  accountDao.findByAccountNameAndPwd(username,password);
@@ -88,6 +113,7 @@ public class AccountServiceImpl implements AccountService {
     }
     return null;
   }
+
 
   @Override
   public String findDespByDespS(String a) {
@@ -112,6 +138,7 @@ public class AccountServiceImpl implements AccountService {
     }
     return null;
   }
+
 
   @Override
   public TxAccountEntity findMangen(int accountId) {
@@ -145,6 +172,18 @@ public class AccountServiceImpl implements AccountService {
     try {
       return accountDao.saveAll(list).size();
 
+    } catch (Exception e) {
+      log.debug("AccountServiceImpl- ->>insertAccount",e);
+    }
+    return 0;
+  }
+
+
+  @Transactional
+  @Override
+  public int saveManage(TxManagerAgentEntity parseInt) {
+    try {
+      return managerAgentDao.saveManavge(parseInt.getManagerId(),parseInt.getAgentId());
     } catch (Exception e) {
       log.debug("AccountServiceImpl- ->>insertAccount",e);
     }

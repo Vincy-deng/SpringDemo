@@ -7,7 +7,7 @@ import java.util.Objects;
 
 @Data
 @Entity
-@Table(name = " tx_account ", schema = "dbo", catalog = "DBApsuite")
+@Table(name = "tx_account", schema = "dbo", catalog = "DBApsuite")
 public class TxAccountEntity {
     private int accountId;
     private String accountName;
@@ -21,7 +21,7 @@ public class TxAccountEntity {
 
     @Id
     @Basic
-    @Column(name = " account_id ", nullable = false)
+    @Column(name = "account_id", nullable = false)
     public int getAccountId() {
         return accountId;
     }
@@ -31,7 +31,7 @@ public class TxAccountEntity {
     }
 
     @Basic
-    @Column(name = " account_name ", nullable = false, length = 16)
+    @Column(name = "account_name", nullable = false, length = 16)
     public String getAccountName() {
         return accountName;
     }
@@ -41,7 +41,7 @@ public class TxAccountEntity {
     }
 
     @Basic
-    @Column(name = " account_password ", nullable = true, length = 16)
+    @Column(name = "account_password", nullable = true, length = 16)
     public String getAccountPassword() {
         return accountPassword;
     }
@@ -51,7 +51,7 @@ public class TxAccountEntity {
     }
 
     @Basic
-    @Column(name = " account_property ", nullable = true)
+    @Column(name = "account_property", nullable = true)
     public Integer getAccountProperty() {
         return accountProperty;
     }
@@ -61,7 +61,7 @@ public class TxAccountEntity {
     }
 
     @Basic
-    @Column(name = " account_rights ", nullable = true, length = 50)
+    @Column(name = "account_rights", nullable = true, length = 50)
     public String getAccountRights() {
         return accountRights;
     }
@@ -71,7 +71,7 @@ public class TxAccountEntity {
     }
 
     @Basic
-    @Column(name = " account_desp ", nullable = true, length = 50)
+    @Column(name = "account_desp", nullable = true, length = 50)
     public String getAccountDesp() {
         return accountDesp;
     }
@@ -81,7 +81,7 @@ public class TxAccountEntity {
     }
 
     @Basic
-    @Column(name = " account_alias ", nullable = true, length = 50)
+    @Column(name = "account_alias", nullable = true, length = 50)
     public String getAccountAlias() {
         return accountAlias;
     }
@@ -91,7 +91,7 @@ public class TxAccountEntity {
     }
 
     @Basic
-    @Column(name = " account_despdescribe ", nullable = true)
+    @Column(name = "account_despdescribe", nullable = true)
     public Integer getAccountDespdescribe() {
         return accountDespdescribe;
     }
@@ -101,7 +101,7 @@ public class TxAccountEntity {
     }
 
     @Basic
-    @Column(name = " account_dspts ", nullable = true, length = 100)
+    @Column(name = "account_dspts", nullable = true, length = 100)
     public String getAccountDspts() {
         return accountDspts;
     }

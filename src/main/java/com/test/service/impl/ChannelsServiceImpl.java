@@ -34,15 +34,16 @@ public class ChannelsServiceImpl implements ChannelsService {
         return null;
     }
 
+
     @Override
     public Page<TChannelsEntity> getChannelsList(int pageSize, int pageNum) {
         try {
-            Sort sort = new Sort(Sort.Direction.DESC, "accountId");
+            Sort sort = new Sort(Sort.Direction.DESC, "lsh");
             Pageable pageable = new PageRequest(pageNum, pageSize, sort);
             Page<TChannelsEntity> channelsList =channelsDao.findAll(pageable);
             return channelsList;
         } catch (Exception e) {
-            log.debug("AccountServiceImpl- ->>findDepartmentList",e);
+            log.debug("ChannelsServiceImpl- ->>findDepartmentList",e);
         }
         return null;
     }

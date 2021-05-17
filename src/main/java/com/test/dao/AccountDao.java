@@ -25,6 +25,9 @@ public interface AccountDao extends JpaRepository<TxAccountEntity,String> {
   @Query(value = "select * from tx_account a,tx_ManagerAgent m where m.manager_id=?1  and a.account_id=m.agent_id",nativeQuery = true)
   List<TxAccountEntity> findAgenctById(int aid);
 
+  @Query(value = "select * from tx_account where account_desp like ?1",nativeQuery = true)
+  List<TxAccountEntity> findAllAccountByDid(String s);
+
   //@Query(value = "select * from tbl_user where user_name like ?",nativeQuery = true)
   @Query(value = "select * from tx_account a where a.account_name = ?1 and a.account_password = ?2",nativeQuery = true)
   List<TxAccountEntity> findByAccountNameAndPwd(String accountName, String accountPassword);

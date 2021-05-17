@@ -14,10 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
@@ -45,7 +42,7 @@ public class ChannelsController {
 
 
     @GetMapping("/list")
-    public ResponseEntity<BaseResponse<TChannelsEntity>>  selectAll(@RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5")int pageSize){
+    public ResponseEntity<BaseResponse<TChannelsEntity>>  selectAll(@RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "10")int pageSize){
         try {
             Page<TChannelsEntity> userIterator =channelsService.getChannelsList(pageSize,pageNum);
             int total=userIterator.getTotalPages();
@@ -61,10 +58,12 @@ public class ChannelsController {
                 HashMap obj=new HashMap();
                 obj.put("token",token);
                 obj.put("total",total);
-                obj.put("channelsList",list);
+                obj.put("List",list);
                 return BaseResponse.generateOKResponseEntity(obj);
             }
         } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println(e);
             return BaseResponse.generateBadResponseEntity(500,"服务器内部错误","");
         }
     }
