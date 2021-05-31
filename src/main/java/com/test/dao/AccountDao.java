@@ -1,7 +1,8 @@
 package com.test.dao;
 
 import com.test.vo.TxAccountEntity;
-import com.test.vo.resultAccountList;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -43,6 +44,11 @@ public interface AccountDao extends JpaRepository<TxAccountEntity,String> {
 
   @Query(value = "select a.account_id,a.account_name,a.account_alias,a.account_desp, a.account_property,a.account_password,a.account_despdescribe,a.account_dspts,a.account_rights from tx_account a,tx_ManagerAgent m where m.agent_id=?1 and m.manager_id=a.account_id",nativeQuery = true)
   TxAccountEntity findMangen(int accountId);
+
+
+  @Query(value = "SELECT * FROM TX_ACCOUNT where ?1",
+      countQuery = "SELECT count(*) FROM TX_ACCOUNT where ?1",nativeQuery = true)
+  Page<TxAccountEntity> multipleChoice(String string, Pageable pageable);
 
   @Modifying
   @Query(value = "update tx_account set account_name= ?2 , account_password= ?3 ," +

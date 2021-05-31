@@ -20,7 +20,7 @@ import java.util.*;
 @RequestMapping("/AccountController")
 public class AccountController {
 
-  @Autowired
+    @Autowired
     private AccountService accountService;
     private final Log log= LogFactory.getLog(getClass());
 
@@ -166,7 +166,7 @@ public class AccountController {
   public ResponseEntity<BaseResponse<TxAccountEntity>>  selectAll(@RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "5")int pageSize){
     try {
       Page<TxAccountEntity> userIterator =accountService.getAccountLista(pageSize,pageNum);
-      int total=userIterator.getTotalPages();
+      int total=userIterator.getTotalPages()*pageSize-1;
       Iterator<TxAccountEntity> aIterator =  userIterator.iterator();
       List<TxAccountEntity> list = new ArrayList<>();
       Map<Integer, String> listDesp = new HashMap<Integer, String>();
@@ -227,18 +227,24 @@ public class AccountController {
 
 
   @PostMapping("/findAllAccount")
-  public ResponseEntity<BaseResponse<TxAccountEntity>> findAllAccount(){
+  public ResponseEntity<BaseResponse<TxAccountEntity>> findAllAccount(@RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "20")int pageSize){
+    System.out.println(pageNum+"------------findAllAccount-------------"+pageSize);
     try {
-      List<TxAccountEntity> account =accountService.findAllAccount();
+      Page<TxAccountEntity> userIterator =accountService.getAccountLista(pageSize,pageNum);
+      int total=userIterator.getTotalPages();
+      Iterator<TxAccountEntity> aIterator =  userIterator.iterator();
       HashMap<Integer,TxAccountEntity> accountMangen = new HashMap<>();
+      List<TxAccountEntity> list = new ArrayList<>();
       HashMap<Integer,String> despList = new HashMap<>();
       HashMap<Integer,String> despManList = new HashMap<>();
-      for (int i = 0; i <account.size() ; i++) {
+      while(aIterator.hasNext()) {
+        TxAccountEntity account=aIterator.next();
+        list.add(account);
         //这里是把存在管理人就把管理人的信息查出来，并带上当前id，以键值对的方式存储到集合中
-        TxAccountEntity accountM=accountService.findMangen(account.get(i).getAccountId());
-        accountMangen.put(account.get(i).getAccountId(),accountM);
+        TxAccountEntity accountM=accountService.findMangen(account.getAccountId());
+        accountMangen.put(account.getAccountId(),accountM);
         //这里开始是把Desp字段的以","分割，并查询到部门信息及管理人
-        String D=(account.get(i).getAccountDesp()==null || account.get(i).getAccountDesp().isEmpty())?"0":account.get(i).getAccountDesp();
+        String D=(account.getAccountDesp()==null || account.getAccountDesp().isEmpty())?"0":account.getAccountDesp();
         String[] as=D.split(",");
         String b="";
         String a="";
@@ -257,15 +263,16 @@ public class AccountController {
               a+="默认部门,";
             }
         }
-        despList.put(account.get(i).getAccountId(),a);
-        despManList.put(account.get(i).getAccountId(),b);
+        despList.put(account.getAccountId(),a);
+        despManList.put(account.getAccountId(),b);
       }
-      if (account!=null){
+      if (list!=null){
         String token = "adminToken";
         HashMap obj = new HashMap();
         obj.put("token", token);
-        obj.put("account", account);
+        obj.put("account", list);
         obj.put("despList", despList);
+        obj.put("total",total);
         obj.put("despManList", despManList);
         obj.put("accountMangen", accountMangen);
         return BaseResponse.generateOKResponseEntity(obj);
@@ -354,6 +361,70 @@ public class AccountController {
       HashMap obj=new HashMap();
       obj.put("token",token);
       obj.put("result",result);
+      return BaseResponse.generateOKResponseEntity(obj);
+    }
+  }
+
+
+  @PostMapping("/multipleChoice")
+  public ResponseEntity<BaseResponse<TxAccountEntity>> multipleChoice(@RequestParam String name,
+                                                                      @RequestParam String alias,
+                                                                      @RequestParam String desp,
+                                                                      @RequestParam int property,
+                                                                      @RequestParam int pageSize,
+                                                                      @RequestParam int pageNum){
+    System.out.println("name:"+name+"alias:"+alias+"desp:"+desp+"property:"+property+"pageSize:"+pageSize+"pageNum:"+pageNum);
+    Page<TxAccountEntity> accountIterator=accountService.multipleChoice(name,alias,desp,property,pageNum,pageSize);
+
+    HashMap<Integer,TxAccountEntity> accountMangen = new HashMap<>();
+    List<TxAccountEntity> list = new ArrayList<>();
+    HashMap<Integer,String> despList = new HashMap<>();
+    HashMap<Integer,String> despManList = new HashMap<>();
+    if (accountIterator.getContent().size()>0){
+      Iterator<TxAccountEntity> aIterator =  accountIterator.getContent().iterator();
+      while(aIterator.hasNext()) {
+        TxAccountEntity account=aIterator.next();
+        list.add(account);
+        //这里是把存在管理人就把管理人的信息查出来，并带上当前id，以键值对的方式存储到集合中
+        TxAccountEntity accountM=accountService.findMangen(account.getAccountId());
+        accountMangen.put(account.getAccountId(),accountM);
+        //这里开始是把Desp字段的以","分割，并查询到部门信息及管理人
+        String D=(account.getAccountDesp()==null || account.getAccountDesp().isEmpty())?"0":account.getAccountDesp();
+        String[] as=D.split(",");
+        String b="";
+        String a="";
+        for (int j = 0; j <as.length ; j++) {
+          if (!as[j].equals("0") && !as[j].isEmpty()){
+            String str="";
+            str=accountService.findDespByDespS(as[j]);
+            if (str == null || str.length() == 0){
+              a+="默认部门,";
+              b=accountService.findDespById(as[j]);
+              b+=b+",";
+            }else {
+              a+=str+",";
+            }
+          }else {
+            a+="默认部门,";
+          }
+        }
+        despList.put(account.getAccountId(),a);
+        despManList.put(account.getAccountId(),b);
+      }
+    }
+    if (accountIterator==null){
+      return BaseResponse.generateBadResponseEntity(500,"查找失败","");
+    }else {
+      int total=accountIterator.getTotalPages();
+      String token="adminToken";
+      HashMap obj=new HashMap();
+      obj.put("token",token);
+      obj.put("total",total);
+      obj.put("despList", despList);
+      obj.put("total",total);
+      obj.put("despManList", despManList);
+      obj.put("accountMangen", accountMangen);
+      obj.put("account",accountIterator);
       return BaseResponse.generateOKResponseEntity(obj);
     }
   }

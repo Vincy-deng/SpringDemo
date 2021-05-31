@@ -33,6 +33,8 @@ public interface AccountService {
 
   int insertAccount(List list);
 
+  Page<TxAccountEntity> multipleChoice(String name, String alias, String desp, int property, int pageNum, int pageSize);
+
   int saveManage(TxManagerAgentEntity parseInt);
 
   int updateAccount(String accountId, String accountName, String accountPassword, String accountProperty, String accountRights, String accountDesp, String accountAlias);

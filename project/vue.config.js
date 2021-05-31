@@ -110,6 +110,14 @@ module.exports = {
   // 第三方插件选项
   // 这是一个不进行任何 schema 验证的对象，因此它可以用来传递任何第三方插件选项。
   pluginOptions: {
+    "style-resources-loader": {
+      preProcessor: "less",
+      patterns: [
+        //这个是加上自己的路径，
+        //注意：试过不能使用别名路径
+        path.resolve(__dirname, "./src/assets/css/base.less")
+      ]
+    },
     foo: {
       // 插件可以作为 `options.pluginOptions.foo` 访问这些选项。
     }

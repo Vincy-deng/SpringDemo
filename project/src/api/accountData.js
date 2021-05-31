@@ -99,10 +99,11 @@ export function findAgentById(data){
   })
 }
 
-export function findAllAccount(){
+export function multipleChoice(data){
   return request({
-    url: '/AccountController/findAllAccount',
-    method: 'post'
+    url: '/AccountController/multipleChoice',
+    method: 'post',
+    params: data
   })
 }
 

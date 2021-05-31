@@ -8,10 +8,7 @@ import com.test.vo.TxManagerAgentEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -176,6 +173,47 @@ public class AccountServiceImpl implements AccountService {
       log.debug("AccountServiceImpl- ->>insertAccount",e);
     }
     return 0;
+  }
+
+
+  @Override
+  public Page<TxAccountEntity> multipleChoice(String name, String alias, String desp, int property,int pageNum,int pageSize) {
+    try {
+      Pageable pageable = new PageRequest(pageNum, pageSize);
+      StringBuffer stringBuffer=new StringBuffer();
+      if (name.isEmpty() && alias.isEmpty() && desp.isEmpty() && property==0){
+        //System.out.println("进这里了，这里是查全部");
+        Page<TxAccountEntity> accountList = accountDao.findAll(pageable);
+        return accountList;
+      }else {
+        if (!name.isEmpty()){
+          stringBuffer.append("account_name like "+"'%"+name+"%'");
+        }
+        if (!alias.isEmpty() && !name.isEmpty()){
+          stringBuffer.append(" and account_alias like "+"'%"+alias+"%'");
+        }else if (!alias.isEmpty() && name.isEmpty()){
+          stringBuffer.append(" account_alias like "+"'%"+alias+"%'");
+        }
+        if (!desp.isEmpty() && !alias.isEmpty()){
+          stringBuffer.append(" and (charindex('"+desp+"',account_desp) > 0 )");
+        }else if (!desp.isEmpty() && alias.isEmpty()){
+          stringBuffer.append(" (charindex('"+desp+"',account_desp) > 0 )");
+        }
+        if (property!=0 && !desp.isEmpty()){
+          stringBuffer.append(" and account_property = "+property);
+        }else if (property!=0 && desp.isEmpty()){
+          stringBuffer.append(" account_property = "+property);
+        }
+        System.out.println("================"+stringBuffer.toString());
+        Page<TxAccountEntity> accountList =accountDao.multipleChoice(stringBuffer.toString(),pageable);
+        log.debug(accountList);
+        return accountList;
+      }
+
+    } catch (Exception e) {
+      log.debug("AccountServiceImpl- ->>findDepartmentList",e);
+    }
+    return null;
   }
 
 

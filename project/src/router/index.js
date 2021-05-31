@@ -43,7 +43,12 @@ export const constantRoutes = [
       name: 'Manager',
       component: () => import('@/views/account/Manager'),
       meta: { title: '用户测试', icon: 'dashboard' }
-    }
+    },{
+      path: 'login',
+      name: 'login',
+      component: () => import('@/views/account/login'),
+      meta: { title: '用户测试', icon: 'dashboard' }
+    },
     ]
   },
   {
@@ -83,6 +88,12 @@ export const Account = [
         name: 'Manager',
         component: () => import('@/views/account/Manager'),
         meta: { title: '测试2', icon: 'table' }
+      },
+      {
+        path: 'login',
+        name: 'login',
+        component: () => import('@/views/account/login'),
+        meta: { title: '测试3', icon: 'table' }
       },
     ]
   },{

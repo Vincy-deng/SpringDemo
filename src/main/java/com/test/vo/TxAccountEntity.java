@@ -9,7 +9,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "tx_account", schema = "dbo", catalog = "DBApsuite")
 public class TxAccountEntity {
-    private int accountId;
+    private Integer accountId;
     private String accountName;
     private String accountPassword;
     private Integer accountProperty;
@@ -22,11 +22,11 @@ public class TxAccountEntity {
     @Id
     @Basic
     @Column(name = "account_id", nullable = false)
-    public int getAccountId() {
+    public Integer getAccountId() {
         return accountId;
     }
 
-    public void setAccountId(int accountId) {
+    public void setAccountId(Integer accountId) {
         this.accountId = accountId;
     }
 

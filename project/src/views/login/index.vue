@@ -46,7 +46,7 @@
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin" >登录</el-button>
       
     </el-form>
   </div>
@@ -157,7 +157,7 @@ $cursor: #fff;
 
 /* reset element-ui css */
 .login-container {
- 
+
   .el-input {
     display: inline-block;
     height: 47px;
@@ -197,9 +197,12 @@ $light_gray: #eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
+  background-image:url(../../assets/images/wallhaven-qdlm65.jpg);
+  background-repeat:no-repeat;
+  background-size:100% 100%;
+  -moz-background-size:100% 100%;
   overflow: hidden;
-
+  border-radius: 35px;
   .login-form {
     position: relative;
     width: 520px;

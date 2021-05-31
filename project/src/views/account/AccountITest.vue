@@ -7,8 +7,10 @@
     </div>
   <el-table
     :data="tableData"
-    height="300"
+    height="500"
     border
+    :row-style="{height:'20px'}"
+    :cell-style="{padding:'0px'}"
     style="width: 100%">
     <el-table-column v-if="show"  prop="accountId" label="帐号id" width="180">
     </el-table-column>
@@ -25,11 +27,11 @@
         <span v-if="scope.row.accountProperty == 16">部门</span>
       </template>
     </el-table-column>
-    <el-table-column prop="accountDesp" label="所属部门" :formatter="changeManProp" width="180">
+    <el-table-column prop="accountDesp" label="所属部门" :formatter="changeManProp" width="250">
     </el-table-column>
-    <el-table-column prop="accountDspts" label="所管理的部门" width="180">
+    <el-table-column prop="accountDspts" label="所管理的部门" width="250">
     </el-table-column>
-    <el-table-column label="操作">
+    <el-table-column label="操作" width="150">
       <template slot-scope="scope">
         <el-button type="primary" size="mini" @click="manageAccount(scope.row)"
                    v-if="scope.row.accountProperty == 1 || scope.row.accountProperty == 2 "
@@ -251,7 +253,7 @@
 
 <script>
   import { getAccountList,delAccount,updateAccount,addAccount,getRightTree,
-    getDepartmentList,findAgentById,findAllAccount,findAllAccountByDid,saveManage} from '../../api/accountData';
+    getDepartmentList,findAgentById,findAllAccountByDid,saveManage} from '../../api/accountData';
   let selectProviderList = [];
   let mAid='';
   export default {
@@ -287,7 +289,7 @@
         dialogFormVisible:false,
         centerDialogVisible:false,
         tableData: [{}],
-        pageSize: 5,
+        pageSize: 20,
         pageNum: 1,
         dataSize: 0,
         hide:false,
